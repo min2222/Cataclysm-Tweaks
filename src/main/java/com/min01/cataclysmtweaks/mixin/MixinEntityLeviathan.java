@@ -118,7 +118,7 @@ public abstract class MixinEntityLeviathan extends Mob implements ITamableLeviat
 	            this.yHeadRot = this.yBodyRot;
 			}
 		}
-		Vec3 vec = flag ? new Vec3(livingentity.xxa, (boolean) ObfuscationReflectionHelper.getPrivateValue(LivingEntity.class, livingentity, "f_20899_") ? this.getBlockJumpFactor() + 0.7 : travelVector.y, livingentity.zza) : travelVector;
+		Vec3 vec = flag ? new Vec3(livingentity.xxa, (boolean) ObfuscationReflectionHelper.getPrivateValue(LivingEntity.class, livingentity, "f_20899_") ? this.getBlockJumpFactor() + 2.7 : travelVector.y, livingentity.zza) : travelVector;
 		if (this.isEffectiveAi() && this.isInWater()) 
 		{
 			super.travel(vec);
