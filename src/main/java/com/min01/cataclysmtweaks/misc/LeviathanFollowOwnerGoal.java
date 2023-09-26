@@ -2,7 +2,7 @@ package com.min01.cataclysmtweaks.misc;
 
 import java.util.EnumSet;
 
-import com.github.L_Ender.cataclysm.entity.BossMonster.The_Leviathan.The_Leviathan_Entity;
+import com.github.L_Ender.cataclysm.entity.BossMonsters.The_Leviathan.The_Leviathan_Entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;

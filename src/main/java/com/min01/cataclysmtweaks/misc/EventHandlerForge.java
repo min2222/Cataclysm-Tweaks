@@ -3,7 +3,7 @@ package com.min01.cataclysmtweaks.misc;
 import java.util.Iterator;
 import java.util.List;
 
-import com.github.L_Ender.cataclysm.entity.BossMonster.The_Leviathan.The_Leviathan_Entity;
+import com.github.L_Ender.cataclysm.entity.BossMonsters.The_Leviathan.The_Leviathan_Entity;
 import com.github.L_Ender.cataclysm.entity.Pet.The_Baby_Leviathan_Entity;
 import com.github.L_Ender.cataclysm.init.ModEntities;
 import com.github.L_Ender.cataclysm.init.ModItems;

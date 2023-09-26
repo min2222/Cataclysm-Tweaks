@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.github.L_Ender.cataclysm.entity.BossMonster.The_Leviathan.Dimensional_Rift_Entity;
+import com.github.L_Ender.cataclysm.entity.BossMonsters.The_Leviathan.Dimensional_Rift_Entity;
 import com.github.L_Ender.cataclysm.entity.effect.Cm_Falling_Block_Entity;
 import com.github.L_Ender.cataclysm.init.ModParticle;
 import com.github.L_Ender.cataclysm.init.ModSounds;
@@ -61,7 +61,7 @@ public abstract class MixinEntityDimensionalRift extends Entity
 	    } 
 	    for (Entity entity : this.level.getEntities(this, getBoundingBox().inflate(30.0D))) 
 	    {
-	    	if (entity == this.owner || (entity instanceof Player && (((Player)entity).getAbilities()).invulnerable) || entity instanceof com.github.L_Ender.cataclysm.entity.BossMonster.The_Leviathan.The_Leviathan_Entity || this.isAlliedTo(entity))
+	    	if (entity == this.owner || (entity instanceof Player && (((Player)entity).getAbilities()).invulnerable) || entity instanceof com.github.L_Ender.cataclysm.entity.BossMonsters.The_Leviathan.The_Leviathan_Entity || this.isAlliedTo(entity))
 	    		continue; 
 	    	Vec3 diff = entity.position().subtract(position().add(0.0D, 0.0D, 0.0D));
 	    	if (entity instanceof LivingEntity) 

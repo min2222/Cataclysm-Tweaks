@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.github.L_Ender.cataclysm.client.event.ClientEvent;
-import com.github.L_Ender.cataclysm.entity.BossMonster.The_Leviathan.The_Leviathan_Entity;
+import com.github.L_Ender.cataclysm.entity.BossMonsters.The_Leviathan.The_Leviathan_Entity;
 import com.github.L_Ender.cataclysm.init.ModEffect;
 import com.min01.cataclysmtweaks.misc.ITamableLeviathan;
 
@@ -32,7 +32,7 @@ public class MixinClientEvent
 	    {
 	    	if (localPlayer.isPassenger())
 	    	{
-	    		if(localPlayer.getVehicle() instanceof com.github.L_Ender.cataclysm.entity.BossMonster.Ignis_Entity)
+	    		if(localPlayer.getVehicle() instanceof com.github.L_Ender.cataclysm.entity.BossMonsters.Ignis_Entity)
 	    		{
 		    		if (event.getOverlay().id().equals(VanillaGuiOverlay.HELMET.id()))
 		    		{
@@ -43,7 +43,7 @@ public class MixinClientEvent
 		    			event.setCanceled(true); 
 		    		}
 	    		}
-	    		else if(localPlayer.getVehicle() instanceof com.github.L_Ender.cataclysm.entity.BossMonster.The_Leviathan.The_Leviathan_Entity)
+	    		else if(localPlayer.getVehicle() instanceof com.github.L_Ender.cataclysm.entity.BossMonsters.The_Leviathan.The_Leviathan_Entity)
 	    		{
 	    			The_Leviathan_Entity leviathan = (The_Leviathan_Entity) localPlayer.getVehicle();
 	    			if(!((ITamableLeviathan)leviathan).isTame())

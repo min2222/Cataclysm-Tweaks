@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.github.L_Ender.cataclysm.entity.BossMonster.The_Leviathan.The_Leviathan_Entity;
+import com.github.L_Ender.cataclysm.entity.BossMonsters.The_Leviathan.The_Leviathan_Entity;
 import com.min01.cataclysmtweaks.config.CataclysmTweaksConfig;
 import com.min01.cataclysmtweaks.misc.ITamableLeviathan;
 
