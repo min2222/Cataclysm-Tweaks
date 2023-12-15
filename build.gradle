@@ -153,7 +153,7 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.19.2-43.2.0'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    implementation fg.deobf("com.github.L_Ender.cataclysm:cataclysm-1.35:1.19.2")
+    implementation fg.deobf("com.github.L_Ender.cataclysm:cataclysm-1.38:1.19.2")
     implementation fg.deobf("com.github.alexthe666.citadel:citadel-2.1.4:1.19")
 
     // Real mod deobf dependency examples - these get remapped to your current mappings

@@ -1,7 +1,9 @@
 package com.min01.cataclysmtweaks.misc;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.github.L_Ender.cataclysm.entity.BossMonsters.The_Leviathan.The_Leviathan_Entity;
 import com.github.L_Ender.cataclysm.entity.Pet.The_Baby_Leviathan_Entity;
@@ -15,7 +17,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -26,6 +30,26 @@ import net.minecraftforge.registries.ForgeRegistries;
 @Mod.EventBusSubscriber(modid = CataclysmTweaks.MODID, bus = Bus.FORGE)
 public class EventHandlerForge 
 {
+	public static final Map<Player, Entity> TARGET_MAP = new HashMap<>();
+	
+	@SubscribeEvent
+	public static void ownerHurtedEntity(LivingHurtEvent event)
+	{
+		if(event.getSource().getEntity() != null && event.getEntity() instanceof Player player)
+		{
+			TARGET_MAP.put(player, event.getSource().getEntity());
+		}
+	}
+	
+	@SubscribeEvent
+	public static void ownerAttackedEntity(LivingAttackEvent event)
+	{
+		if(event.getSource().getEntity() != null && event.getSource().getEntity() instanceof Player player)
+		{
+			TARGET_MAP.put(player, event.getEntity());
+		}
+	}
+	
 	@SubscribeEvent
 	public static void babyLeviathanTame(PlayerInteractEvent.EntityInteract event)
 	{
@@ -49,8 +73,8 @@ public class EventHandlerForge
 						((ITamableLeviathan)leviathan).setCommand(baby.getCommand());
 						((ITamableLeviathan)leviathan).setOrderedToSit(baby.isSitting());
 						leviathan.goalSelector.addGoal(2, new LeviathanFollowOwnerGoal(leviathan, 1.3D, 4.0F, 2.0F, true));
-						leviathan.targetSelector.addGoal(1, new LeviathanOwnerHurtByTargetGoal(leviathan));
-						leviathan.targetSelector.addGoal(2, new LeviathanOwnerHurtTargetGoal(leviathan));
+						//leviathan.targetSelector.addGoal(1, new LeviathanOwnerHurtByTargetGoal(leviathan));
+						//leviathan.targetSelector.addGoal(2, new LeviathanOwnerHurtTargetGoal(leviathan));
 						event.getLevel().addFreshEntity(leviathan);
 						baby.discard();
 					}

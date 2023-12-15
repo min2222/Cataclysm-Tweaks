@@ -13,12 +13,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.github.L_Ender.cataclysm.entity.BossMonsters.The_Leviathan.The_Leviathan_Entity;
 import com.github.L_Ender.cataclysm.entity.etc.CMBossInfoServer;
+import com.min01.cataclysmtweaks.misc.EventHandlerForge;
 import com.min01.cataclysmtweaks.misc.ITamableLeviathan;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.players.OldUsersConverter;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -64,7 +66,23 @@ public abstract class MixinEntityLeviathan extends Mob implements ITamableLeviat
 
 		if(this.isTame())
 		{
+			this.setPersistenceRequired();
 			this.bossInfo.setVisible(false);
+			
+			if(this.getTarget() != null)
+			{
+				if(EventHandlerForge.TARGET_MAP.get(this.getOwner()) != this.getTarget())
+				{
+					this.setTarget(null);
+				}
+			}
+			else
+			{
+				if(EventHandlerForge.TARGET_MAP.get(this.getOwner()) instanceof LivingEntity living)
+				{
+					this.setTarget(living);
+				}
+			}
 		}
 	}
 	
@@ -93,10 +111,28 @@ public abstract class MixinEntityLeviathan extends Mob implements ITamableLeviat
 	{
 	    setOrderedToSit(compound.getBoolean("CmPetSitting"));
 	    setCommand(compound.getInt("Command"));
-	    if (compound.hasUUID("Owner")) 
+	    UUID uuid;
+	    if (compound.hasUUID("Owner"))
 	    {
-    		this.setOwnerUUID(compound.getUUID("Owner"));
-    		this.setTame(true);
+	    	uuid = compound.getUUID("Owner");
+	    } 
+	    else
+	    {
+	    	String s = compound.getString("Owner");
+	    	uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+	    }
+	      
+	    if (uuid != null)
+	    {
+	    	try 
+	    	{
+	    		this.setOwnerUUID(uuid);
+	    		this.setTame(true);
+	    	} 
+	    	catch (Throwable throwable) 
+	    	{
+	    		this.setTame(false);
+	    	}
 	    }
 	}
 	
