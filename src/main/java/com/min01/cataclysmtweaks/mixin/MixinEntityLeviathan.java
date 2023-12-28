@@ -207,12 +207,12 @@ public abstract class MixinEntityLeviathan extends Mob implements ITamableLeviat
 		}
 	}
 	
-	@Inject(at = @At("HEAD"), method = "handleEntityEvent", cancellable = true)
-	private void handleEntityEvent(byte id, CallbackInfo ci)
+	@Inject(at = @At("HEAD"), method = "canPlayMusic", cancellable = true, remap = false)
+	private void canPlayMusic(CallbackInfoReturnable<Boolean> ci)
 	{
-		if(id == 67 && this.isTame())
+		if(this.isTame())
 		{
-			ci.cancel();
+			ci.setReturnValue(false);
 		}
 	}
 	
