@@ -28,6 +28,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -56,14 +57,6 @@ public abstract class MixinEntityLeviathan extends Mob implements ITamableLeviat
 	@Inject(at = @At("HEAD"), method = "tick", cancellable = true)
 	private void tick(CallbackInfo ci)
 	{
-		if(this.isTame() && this.getFirstPassenger() != null)
-		{
-			if(this.getFirstPassenger().isShiftKeyDown())
-			{
-				this.getFirstPassenger().stopRiding();
-			}
-		}
-
 		if(this.isTame())
 		{
 			this.setPersistenceRequired();
@@ -81,6 +74,17 @@ public abstract class MixinEntityLeviathan extends Mob implements ITamableLeviat
 				if(EventHandlerForge.TARGET_MAP.get(this.getOwner()) instanceof LivingEntity living)
 				{
 					this.setTarget(living);
+				}
+			}
+			
+			if(this.isVehicle())
+			{
+				if(this.getFirstPassenger() == this.getOwner())
+				{
+					if(this.getOwner().isShiftKeyDown())
+					{
+						this.getOwner().stopRiding();
+					}
 				}
 			}
 		}
@@ -136,39 +140,51 @@ public abstract class MixinEntityLeviathan extends Mob implements ITamableLeviat
 	    }
 	}
 	
-	@Inject(at = @At("HEAD"), method = "travel", cancellable = true)
-	private void travel(Vec3 travelVector, CallbackInfo ci)
+	@Override
+	public boolean canBeRiddenUnderFluidType(FluidType type, Entity rider)
 	{
-		ci.cancel();
-		LivingEntity livingentity = (LivingEntity) this.getFirstPassenger();
-		boolean flag = this.isVehicle() && livingentity != null && this.isTame() && livingentity == this.getOwner();	
-		if (this.isVehicle() && livingentity != null)
+		if(this.isTame() && this.getOwner() != null)
 		{
-			if(this.isTame() && livingentity == this.getOwner())
+			return rider == this.getOwner();
+		}
+		return super.canBeRiddenUnderFluidType(type, rider);
+	}
+	
+	@Inject(at = @At("HEAD"), method = "travel", cancellable = true)
+	private void travel(Vec3 vec, CallbackInfo ci)
+	{
+		if(this.isVehicle() && this.isTame())
+		{
+			if(this.getOwner() != null && this.getFirstPassenger() == this.getOwner())
 			{
-	            this.setYRot(livingentity.getYRot());
+				ci.cancel();
+				boolean jumping = ObfuscationReflectionHelper.getPrivateValue(LivingEntity.class, this.getOwner(), "f_20899_");
+				if(jumping)
+				{
+					if(this.isOnGround() || this.isInWater())
+					{
+						this.jumpFromGround();
+					}
+				}
+				Vec3 travelVector = new Vec3(this.getOwner().xxa, this.getOwner().yya, this.getOwner().zza);
+	            this.setYRot(this.getOwner().getYRot());
 	            this.yRotO = this.getYRot();
-	            this.setXRot(livingentity.getXRot() * 0.5F);
+	            this.setXRot(this.getOwner().getXRot() * 0.5F);
 	            this.setRot(this.getYRot(), this.getXRot());
 	            this.yBodyRot = this.getYRot();
 	            this.yHeadRot = this.yBodyRot;
+	            if(this.isEffectiveAi())
+	            {
+	    			this.moveRelative((float) this.getOwner().getAttributeBaseValue(Attributes.MOVEMENT_SPEED), travelVector);
+	    			this.move(MoverType.SELF, this.getDeltaMovement());
+	    			this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
+	    			if (this.getTarget() == null && The_Leviathan_Entity.class.cast(this).getAnimation() == The_Leviathan_Entity.NO_ANIMATION)
+	    			{
+	    				this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.005D, 0.0D));
+	    			}
+	            }
+    			super.travel(travelVector);
 			}
-		}
-		Vec3 vec = flag ? new Vec3(livingentity.xxa, (boolean) ObfuscationReflectionHelper.getPrivateValue(LivingEntity.class, livingentity, "f_20899_") ? this.getBlockJumpFactor() + 2.7 : travelVector.y, livingentity.zza) : travelVector;
-		if (this.isEffectiveAi() && this.isInWater()) 
-		{
-			super.travel(vec);
-			this.moveRelative(this.getSpeed(), vec);
-			this.move(MoverType.SELF, this.getDeltaMovement());
-			this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
-			if (this.getTarget() == null && The_Leviathan_Entity.class.cast(this).getAnimation() == The_Leviathan_Entity.NO_ANIMATION)
-			{
-				this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.005D, 0.0D));
-			}
-		} 
-		else
-		{
-			super.travel(vec);
 		}
 	}
 	
