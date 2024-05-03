@@ -40,7 +40,7 @@ public class TameUtil
 				
 				if(target != null)
 				{
-					if(target != ((LivingEntity) owner).getLastHurtMob() || target != ((LivingEntity) owner).getLastHurtByMob() || target == tame.getOwner() || target.isAlliedTo(tame.getOwner()))
+					if(target == tame.getOwner() || target.isAlliedTo(tame.getOwner()))
 					{
 						((Mob) tame).setTarget(null);
 					}

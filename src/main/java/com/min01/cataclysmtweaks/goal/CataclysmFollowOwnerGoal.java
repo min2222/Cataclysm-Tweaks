@@ -81,8 +81,7 @@ public class CataclysmFollowOwnerGoal extends Goal
 	{
 		LivingEntity livingEntity = ((ITamable) this.tameable).getOwner();
 		if (livingEntity != null)
-			return (((Entity) this.tameable).distanceTo((Entity) livingEntity) < 30.0F && ((Mob) this.tameable).getTarget() != null
-					&& ((Mob) this.tameable).getTarget().isAlive());
+			return (((Entity) this.tameable).distanceTo((Entity) livingEntity) < 30.0F && ((Mob) this.tameable).getTarget() != null && ((Mob) this.tameable).getTarget().isAlive());
 		return false;
 	}
 		

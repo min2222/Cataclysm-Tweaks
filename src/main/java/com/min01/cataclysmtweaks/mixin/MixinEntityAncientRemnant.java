@@ -13,6 +13,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.github.L_Ender.cataclysm.entity.BossMonsters.Ancient_Remnant_Entity;
 import com.github.L_Ender.cataclysm.entity.etc.CMBossInfoServer;
+import com.min01.cataclysmtweaks.goal.CataclysmFollowOwnerGoal;
+import com.min01.cataclysmtweaks.goal.CataclysmOwnerHurtByTargetGoal;
+import com.min01.cataclysmtweaks.goal.CataclysmOwnerHurtTargetGoal;
 import com.min01.cataclysmtweaks.misc.ITamable;
 import com.min01.cataclysmtweaks.util.TameUtil;
 
@@ -20,6 +23,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -44,6 +48,17 @@ public abstract class MixinEntityAncientRemnant extends  Mob implements ITamable
 	public MixinEntityAncientRemnant(EntityType<? extends Mob> p_21368_, Level p_21369_) 
 	{
 		super(p_21368_, p_21369_);
+	}
+	
+	@Inject(at = @At("HEAD"), method = "registerGoals", cancellable = true)
+	private void registerGoals(CallbackInfo ci)
+	{
+		if(this.isTame())
+		{
+			Ancient_Remnant_Entity.class.cast(this).goalSelector.addGoal(2, new CataclysmFollowOwnerGoal((ITamable) Ancient_Remnant_Entity.class.cast(this), 1.3D, 4.0F, 2.0F, true));
+			Ancient_Remnant_Entity.class.cast(this).targetSelector.addGoal(1, new CataclysmOwnerHurtByTargetGoal((ITamable) Ancient_Remnant_Entity.class.cast(this)));
+			Ancient_Remnant_Entity.class.cast(this).targetSelector.addGoal(2, new CataclysmOwnerHurtTargetGoal((ITamable) Ancient_Remnant_Entity.class.cast(this)));
+		}
 	}
 	
 	@Inject(at = @At("HEAD"), method = "tick", cancellable = true)
@@ -94,9 +109,34 @@ public abstract class MixinEntityAncientRemnant extends  Mob implements ITamable
 	            this.setRot(this.getYRot(), this.getXRot());
 	            this.yBodyRot = this.getYRot();
 	            this.yHeadRot = this.yBodyRot;
-    			super.travel(travelVector);
+    			super.travel(vec.add(travelVector));
 			}
 		}
+		else
+		{
+			super.travel(vec);
+		}
+	}
+	
+	@Override
+	public double getPassengersRidingOffset() 
+	{
+		return super.getPassengersRidingOffset() + 0.5;
+	}
+	
+	@Override
+	public void positionRider(Entity p_20312_) 
+	{
+		Vec3 lookPos = this.getLookPos(0, this.getYRot(), 0, 3);
+		p_20312_.setPos(this.position().add(lookPos.x, lookPos.y + this.getPassengersRidingOffset(), lookPos.z));
+	}
+	
+	private Vec3 getLookPos(float xRot, float yRot, float yPos, double distance)
+	{
+		float f = -Mth.sin(yRot * ((float)Math.PI / 180F)) * Mth.cos(xRot * ((float)Math.PI / 180F));
+		float f1 = -Mth.sin((xRot + yPos) * ((float)Math.PI / 180F));
+		float f2 = Mth.cos(yRot * ((float)Math.PI / 180F)) * Mth.cos(xRot * ((float)Math.PI / 180F));
+		return new Vec3(f, f1, f2).scale(distance);
 	}
 	
 	@Override

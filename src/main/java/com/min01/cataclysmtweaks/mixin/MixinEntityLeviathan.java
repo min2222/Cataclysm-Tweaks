@@ -15,6 +15,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.github.L_Ender.cataclysm.entity.BossMonsters.The_Leviathan.The_Leviathan_Entity;
 import com.github.L_Ender.cataclysm.entity.etc.CMBossInfoServer;
+import com.min01.cataclysmtweaks.goal.CataclysmFollowOwnerGoal;
+import com.min01.cataclysmtweaks.goal.CataclysmOwnerHurtByTargetGoal;
+import com.min01.cataclysmtweaks.goal.CataclysmOwnerHurtTargetGoal;
 import com.min01.cataclysmtweaks.misc.ITamable;
 import com.min01.cataclysmtweaks.util.TameUtil;
 
@@ -51,6 +54,17 @@ public abstract class MixinEntityLeviathan extends Mob implements ITamable
 	protected MixinEntityLeviathan(EntityType<? extends Mob> p_20966_, Level p_20967_)
 	{
 		super(p_20966_, p_20967_);
+	}
+	
+	@Inject(at = @At("HEAD"), method = "registerGoals", cancellable = true)
+	private void registerGoals(CallbackInfo ci)
+	{
+		if(this.isTame())
+		{
+			The_Leviathan_Entity.class.cast(this).goalSelector.addGoal(2, new CataclysmFollowOwnerGoal((ITamable) The_Leviathan_Entity.class.cast(this), 1.3D, 4.0F, 2.0F, true));
+			The_Leviathan_Entity.class.cast(this).targetSelector.addGoal(1, new CataclysmOwnerHurtByTargetGoal((ITamable) The_Leviathan_Entity.class.cast(this)));
+			The_Leviathan_Entity.class.cast(this).targetSelector.addGoal(2, new CataclysmOwnerHurtTargetGoal((ITamable) The_Leviathan_Entity.class.cast(this)));
+		}
 	}
 	
 	@Inject(at = @At("HEAD"), method = "tick", cancellable = true)

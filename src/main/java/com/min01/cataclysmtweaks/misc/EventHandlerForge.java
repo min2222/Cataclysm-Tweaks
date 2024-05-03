@@ -119,6 +119,21 @@ public class EventHandlerForge
 				}
 			}
 		}
+		
+		if(event.getEntity() instanceof Ancient_Remnant_Entity)
+		{
+			Ancient_Remnant_Entity remnant = (Ancient_Remnant_Entity) event.getEntity();
+			if(((ITamable) remnant).isTame())
+			{
+				for(ItemEntity entity : event.getDrops())
+				{
+					if(entity.getItem().getItem() != ModItems.REMNANT_SKULL.get())
+					{
+						entity.discard();
+					}
+				}
+			}
+		}
 	}
 	
 	@SubscribeEvent
