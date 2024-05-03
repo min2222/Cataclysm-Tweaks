@@ -4,15 +4,15 @@
 	"package": "com.min01.cataclysmtweaks.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-	"MixinEntityLeviathan",
-	"MixinLivingEntity",
-	"MixinEntity",
-	"MixinMob",
-	"MixinEntityDimensionalRift",
-	"EntityInvoker"
+		"MixinEntityLeviathan",
+		"MixinEntityDimensionalRift",
+		"MixinEntityAncientRemnant",
+		"MixinAbyssalEggBlock",
+		"MixinBrushItem",
+		"MixinEntityBabyLeviathan",
+		"MixinEntityModernRemnant"
 	],
-	"client": [
-	],
+	"client": [],
 	"server": [],
 	"injectors": {
 		"defaultRequire": 1

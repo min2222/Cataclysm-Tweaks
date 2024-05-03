@@ -162,9 +162,10 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.19.2-43.2.0'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    implementation fg.deobf("curse.maven:l_ender-s-cataclysm-551586:5039717")
+    implementation fg.deobf("curse.maven:lendercataclysm-551586:5070401")
     implementation fg.deobf("curse.maven:citadel-331936:4556677")
-    implementation fg.deobf("curse.maven:curios-309927:5049407")
+    implementation fg.deobf("curse.maven:curios-309927:5302436")
+    implementation fg.deobf("curse.maven:archaeology-api-950822:5141973")
 
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api") // Adds JEI API as a compile dependency

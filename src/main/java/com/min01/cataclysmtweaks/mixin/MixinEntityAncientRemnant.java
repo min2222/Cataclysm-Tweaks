@@ -3,8 +3,6 @@ package com.min01.cataclysmtweaks.mixin;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -13,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.github.L_Ender.cataclysm.entity.BossMonsters.The_Leviathan.The_Leviathan_Entity;
+import com.github.L_Ender.cataclysm.entity.BossMonsters.Ancient_Remnant_Entity;
 import com.github.L_Ender.cataclysm.entity.etc.CMBossInfoServer;
 import com.min01.cataclysmtweaks.misc.ITamable;
 import com.min01.cataclysmtweaks.util.TameUtil;
@@ -26,37 +24,32 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Team;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
-@Mixin(The_Leviathan_Entity.class)
-public abstract class MixinEntityLeviathan extends Mob implements ITamable
+@Mixin(Ancient_Remnant_Entity.class)
+public abstract class MixinEntityAncientRemnant extends  Mob implements ITamable
 {
-	//0 == wandering
-	//1 == follow
-	//2 == sit
-	private static final EntityDataAccessor<Integer> COMMAND = SynchedEntityData.defineId(The_Leviathan_Entity.class, EntityDataSerializers.INT);
-	private static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(The_Leviathan_Entity.class, EntityDataSerializers.OPTIONAL_UUID);
-	private static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(The_Leviathan_Entity.class, EntityDataSerializers.BYTE);
+	private static final EntityDataAccessor<Integer> COMMAND = SynchedEntityData.defineId(Ancient_Remnant_Entity.class, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(Ancient_Remnant_Entity.class, EntityDataSerializers.OPTIONAL_UUID);
+	private static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(Ancient_Remnant_Entity.class, EntityDataSerializers.BYTE);
 
 	@Shadow
 	@Final
-	private CMBossInfoServer bossInfo;
+	private CMBossInfoServer bossEvent;
 	
-	protected MixinEntityLeviathan(EntityType<? extends Mob> p_20966_, Level p_20967_)
+	public MixinEntityAncientRemnant(EntityType<? extends Mob> p_21368_, Level p_21369_) 
 	{
-		super(p_20966_, p_20967_);
+		super(p_21368_, p_21369_);
 	}
 	
 	@Inject(at = @At("HEAD"), method = "tick", cancellable = true)
 	private void tick(CallbackInfo ci)
 	{
-		TameUtil.tick(this, this, this.bossInfo);
+		TameUtil.tick(this, this, this.bossEvent);
 	}
 	
 	@Inject(at = @At("HEAD"), method = "defineSynchedData", cancellable = true)
@@ -79,14 +72,13 @@ public abstract class MixinEntityLeviathan extends Mob implements ITamable
 		TameUtil.readData(compound, this);
 	}
 	
-	@Inject(at = @At("HEAD"), method = "travel", cancellable = true)
-	private void travel(Vec3 vec, CallbackInfo ci)
+	@Override
+	public void travel(Vec3 vec)
 	{
 		if(this.isVehicle() && this.isTame())
 		{
 			if(this.getOwner() != null && this.getFirstPassenger() == this.getOwner())
 			{
-				ci.cancel();
 				boolean jumping = ObfuscationReflectionHelper.getPrivateValue(LivingEntity.class, this.getOwner(), "f_20899_");
 				if(jumping)
 				{
@@ -102,16 +94,6 @@ public abstract class MixinEntityLeviathan extends Mob implements ITamable
 	            this.setRot(this.getYRot(), this.getXRot());
 	            this.yBodyRot = this.getYRot();
 	            this.yHeadRot = this.yBodyRot;
-	            if(this.isEffectiveAi())
-	            {
-	    			this.moveRelative((float) this.getOwner().getAttributeBaseValue(Attributes.MOVEMENT_SPEED), travelVector);
-	    			this.move(MoverType.SELF, this.getDeltaMovement());
-	    			this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
-	    			if (this.getTarget() == null && The_Leviathan_Entity.class.cast(this).getAnimation() == The_Leviathan_Entity.NO_ANIMATION)
-	    			{
-	    				this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.005D, 0.0D));
-	    			}
-	            }
     			super.travel(travelVector);
 			}
 		}
@@ -144,26 +126,6 @@ public abstract class MixinEntityLeviathan extends Mob implements ITamable
 		ci.setReturnValue(!this.isTame());
 	}
 	
-	@Inject(at = @At("HEAD"), method = "HoldAttack", cancellable = true, remap = false)
-	private void HoldAttack(CallbackInfo ci) 
-	{
-		LivingEntity lifted = this.getHeldEntity();
-		if (lifted != null) 
-		{
-			if(lifted == this.getOwner())
-			{
-				ci.cancel();
-			}
-		} 
-	}
-	
-	@Nullable
-	@Shadow
-	public LivingEntity getHeldEntity()
-	{
-		throw new IllegalStateException();
-	}
-
 	@Override
 	public int getCommand() 
 	{

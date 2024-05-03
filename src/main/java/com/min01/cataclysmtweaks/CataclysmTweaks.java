@@ -16,6 +16,6 @@ public class CataclysmTweaks
 	public CataclysmTweaks() 
 	{
 		MOD_EVENT_BUS = FMLJavaModLoadingContext.get().getModEventBus();
-		CataclysmTweaksConfig.loadConfig(CataclysmTweaksConfig.config, FMLPaths.CONFIGDIR.get().resolve("cataclysm-tweaks.toml").toString());
+		CataclysmTweaksConfig.loadConfig(CataclysmTweaksConfig.CONFIG, FMLPaths.CONFIGDIR.get().resolve("cataclysm-tweaks.toml").toString());
 	}
 }

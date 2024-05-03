@@ -1,26 +1,27 @@
-package com.min01.cataclysmtweaks.misc;
+package com.min01.cataclysmtweaks.goal;
 
 import java.util.EnumSet;
 
-import com.github.L_Ender.cataclysm.entity.BossMonsters.The_Leviathan.The_Leviathan_Entity;
+import com.min01.cataclysmtweaks.misc.ITamable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 
-public class LeviathanFollowOwnerGoal extends Goal 
+public class CataclysmFollowOwnerGoal extends Goal 
 {
-	private final The_Leviathan_Entity tameable;
+	private final ITamable tameable;
 
-	private final LevelReader world;
+	private final Level world;
 
 	private final double followSpeed;
 
@@ -36,10 +37,10 @@ public class LeviathanFollowOwnerGoal extends Goal
 
 	private float oldWaterCost;
 
-	public LeviathanFollowOwnerGoal(The_Leviathan_Entity tamed, double speed, float minDist, float maxDist, boolean leaves) 
+	public CataclysmFollowOwnerGoal(ITamable tame, double speed, float minDist, float maxDist, boolean leaves) 
 	{
-		this.tameable = tamed;
-		this.world = (LevelReader) tamed.level;
+		this.tameable = tame;
+		this.world = ((Entity) tame).level;
 		this.followSpeed = speed;
 		this.minDist = minDist;
 		this.maxDist = maxDist;
@@ -50,16 +51,16 @@ public class LeviathanFollowOwnerGoal extends Goal
 	@Override
 	public boolean canUse() 
 	{
-		LivingEntity owner = ((ITamableLeviathan) this.tameable).getOwner();
+		LivingEntity owner = ((ITamable) this.tameable).getOwner();
 		if (owner == null)
 			return false;
 		if (owner.isSpectator())
 			return false;
-		if (((ITamableLeviathan) this.tameable).getCommand() != 1 || isInCombat())
+		if (((ITamable) this.tameable).getCommand() != 1 || isInCombat())
 			return false;
-		if (this.tameable.distanceToSqr((Entity) owner) < (this.minDist * this.minDist))
+		if (((Entity) this.tameable).distanceToSqr((Entity) owner) < (this.minDist * this.minDist))
 			return false;
-		if (this.tameable.getTarget() != null && this.tameable.getTarget().isAlive())
+		if (((Mob) this.tameable).getTarget() != null && ((Mob) this.tameable).getTarget().isAlive())
 			return false;
 		return true;
 	}
@@ -67,57 +68,57 @@ public class LeviathanFollowOwnerGoal extends Goal
 	@Override
 	public boolean canContinueToUse() 
 	{
-		if (this.tameable.getNavigation().isDone() || isInCombat())
+		if (((Mob) this.tameable).getNavigation().isDone() || isInCombat())
 			return false;
-		if (((ITamableLeviathan) this.tameable).getCommand() != 1)
+		if (((ITamable) this.tameable).getCommand() != 1)
 			return false;
-		if (this.tameable.getTarget() != null && this.tameable.getTarget().isAlive())
+		if (((Mob) this.tameable).getTarget() != null && ((Mob) this.tameable).getTarget().isAlive())
 			return false;
-		return (this.tameable.distanceToSqr((Entity) this.owner) > (this.maxDist * this.maxDist));
+		return (((Entity) this.tameable).distanceToSqr((Entity) this.owner) > (this.maxDist * this.maxDist));
 	}
 
 	private boolean isInCombat()
 	{
-		LivingEntity livingEntity = ((ITamableLeviathan) this.tameable).getOwner();
+		LivingEntity livingEntity = ((ITamable) this.tameable).getOwner();
 		if (livingEntity != null)
-			return (this.tameable.distanceTo((Entity) livingEntity) < 30.0F && this.tameable.getTarget() != null
-					&& this.tameable.getTarget().isAlive());
+			return (((Entity) this.tameable).distanceTo((Entity) livingEntity) < 30.0F && ((Mob) this.tameable).getTarget() != null
+					&& ((Mob) this.tameable).getTarget().isAlive());
 		return false;
 	}
 		
 	@Override
 	public void start()
 	{
-		this.owner = ((ITamableLeviathan) this.tameable).getOwner();
+		this.owner = ((ITamable) this.tameable).getOwner();
 		this.timeToRecalcPath = 0;
-		this.oldWaterCost = this.tameable.getPathfindingMalus(BlockPathTypes.WATER);
-		this.tameable.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
+		this.oldWaterCost = ((Mob) this.tameable).getPathfindingMalus(BlockPathTypes.WATER);
+		((Mob) this.tameable).setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
 	}
 
 	@Override
 	public void stop()
 	{
 		this.owner = null;
-		this.tameable.getNavigation().stop();
-		this.tameable.setPathfindingMalus(BlockPathTypes.WATER, this.oldWaterCost);
+		((Mob) this.tameable).getNavigation().stop();
+		((Mob) this.tameable).setPathfindingMalus(BlockPathTypes.WATER, this.oldWaterCost);
 	}
 
 	@Override
 	public void tick() 
 	{
-		this.tameable.getLookControl().setLookAt((Entity) this.owner, 10.0F, this.tameable.getMaxHeadXRot());
+		((Mob) this.tameable).getLookControl().setLookAt((Entity) this.owner, 10.0F, ((Mob) this.tameable).getMaxHeadXRot());
 		if (--this.timeToRecalcPath <= 0) 
 		{
 			this.timeToRecalcPath = 10;
-			if (!this.tameable.isLeashed() && !this.tameable.isPassenger())
+			if (!((Mob) this.tameable).isLeashed() && !((Entity) this.tameable).isPassenger())
 			{
-				if (this.tameable.distanceToSqr((Entity) this.owner) >= 144.0D) 
+				if (((Entity) this.tameable).distanceToSqr((Entity) this.owner) >= 144.0D) 
 				{
 					tryToTeleportNearEntity();
 				} 
 				else 
 				{
-					this.tameable.getNavigation().moveTo((Entity) this.owner, this.followSpeed);
+					((Mob) this.tameable).getNavigation().moveTo((Entity) this.owner, this.followSpeed);
 				}
 			}
 		}
@@ -143,8 +144,8 @@ public class LeviathanFollowOwnerGoal extends Goal
 			return false;
 		if (!isTeleportFriendlyBlock(new BlockPos(p_226328_1_, p_226328_2_, p_226328_3_)))
 			return false;
-		this.tameable.moveTo(p_226328_1_ + 0.5D, p_226328_2_, p_226328_3_ + 0.5D, this.tameable.getYRot(), this.tameable.getXRot());
-		this.tameable.getNavigation().stop();
+		((Entity) this.tameable).moveTo(p_226328_1_ + 0.5D, p_226328_2_, p_226328_3_ + 0.5D, ((Entity) this.tameable).getYRot(), ((Entity) this.tameable).getXRot());
+		((Mob) this.tameable).getNavigation().stop();
 		return true;
 	}
 
@@ -158,8 +159,8 @@ public class LeviathanFollowOwnerGoal extends Goal
 		BlockState lvt_3_1_ = this.world.getBlockState(pos.below());
 		if (!this.teleportToLeaves && lvt_3_1_.getBlock() instanceof net.minecraft.world.level.block.LeavesBlock)
 			return false;
-		BlockPos lvt_4_1_ = pos.subtract((Vec3i) this.tameable.blockPosition());
-		return this.world.noCollision((Entity) this.tameable, this.tameable.getBoundingBox().move(lvt_4_1_));
+		BlockPos lvt_4_1_ = pos.subtract((Vec3i) ((Entity) this.tameable).blockPosition());
+		return this.world.noCollision((Entity) this.tameable, ((Entity) this.tameable).getBoundingBox().move(lvt_4_1_));
 	}
 
 	public boolean avoidsLand() 
@@ -169,6 +170,6 @@ public class LeviathanFollowOwnerGoal extends Goal
 
 	private int getRandomNumber(int p_226327_1_, int p_226327_2_)
 	{
-		return this.tameable.getRandom().nextInt(p_226327_2_ - p_226327_1_ + 1) + p_226327_1_;
+		return ((LivingEntity) this.tameable).getRandom().nextInt(p_226327_2_ - p_226327_1_ + 1) + p_226327_1_;
 	}
 }

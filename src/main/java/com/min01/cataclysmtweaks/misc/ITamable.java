@@ -5,15 +5,11 @@ import java.util.UUID;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
-public interface ITamableLeviathan
+public interface ITamable
 {
 	public int getCommand();
 		  
 	public void setCommand(int command);
-		  
-	public boolean isSitting();
-		  
-	public void setOrderedToSit(boolean sit);
 	
 	public boolean isTame();
 	 

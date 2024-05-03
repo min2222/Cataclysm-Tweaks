@@ -1,25 +1,32 @@
 package com.min01.cataclysmtweaks.misc;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
+import com.github.L_Ender.cataclysm.entity.BossMonsters.Ancient_Remnant_Entity;
 import com.github.L_Ender.cataclysm.entity.BossMonsters.The_Leviathan.The_Leviathan_Entity;
+import com.github.L_Ender.cataclysm.entity.Pet.Modern_Remnant_Entity;
 import com.github.L_Ender.cataclysm.entity.Pet.The_Baby_Leviathan_Entity;
 import com.github.L_Ender.cataclysm.init.ModEntities;
 import com.github.L_Ender.cataclysm.init.ModItems;
+import com.min01.archaeology.item.BrushItem;
 import com.min01.cataclysmtweaks.CataclysmTweaks;
 import com.min01.cataclysmtweaks.config.CataclysmTweaksConfig;
+import com.min01.cataclysmtweaks.goal.CataclysmFollowOwnerGoal;
+import com.min01.cataclysmtweaks.goal.CataclysmOwnerHurtByTargetGoal;
+import com.min01.cataclysmtweaks.goal.CataclysmOwnerHurtTargetGoal;
+import com.min01.cataclysmtweaks.util.TameUtil;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,67 +36,79 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod.EventBusSubscriber(modid = CataclysmTweaks.MODID, bus = Bus.FORGE)
 public class EventHandlerForge 
-{
-	public static final Map<Player, Entity> TARGET_MAP = new HashMap<>();
-	
+{	
 	@SubscribeEvent
-	public static void ownerHurtedEntity(LivingHurtEvent event)
+	public static void onEntityInteract(PlayerInteractEvent.EntityInteract event)
 	{
-		if(event.getSource().getEntity() != null && event.getEntity() instanceof Player player)
+		Level level = event.getLevel();
+		Entity target = event.getTarget();
+		Player player = event.getEntity();
+		ItemStack stack = event.getItemStack();
+		if(CataclysmTweaksConfig.canBabyLeviathanGrow.get() && target instanceof The_Baby_Leviathan_Entity baby)
 		{
-			TARGET_MAP.put(player, event.getSource().getEntity());
-		}
-	}
-	
-	@SubscribeEvent
-	public static void ownerAttackedEntity(LivingAttackEvent event)
-	{
-		if(event.getSource().getEntity() != null && event.getSource().getEntity() instanceof Player player)
-		{
-			TARGET_MAP.put(player, event.getEntity());
-		}
-	}
-	
-	@SubscribeEvent
-	public static void babyLeviathanTame(PlayerInteractEvent.EntityInteract event)
-	{
-		if(CataclysmTweaksConfig.canBabyLeviathanGrow.get())
-		{
-			if(event.getTarget() instanceof The_Baby_Leviathan_Entity)
+			Item growItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(CataclysmTweaksConfig.leviathanGrowItem.get()));
+			if(baby.isTame() && baby.isOwnedBy(player) && stack.getItem() == growItem)
 			{
-				The_Baby_Leviathan_Entity baby = (The_Baby_Leviathan_Entity) event.getTarget();
-				if(baby.isTame() && baby.isOwnedBy(event.getEntity()))
+				if(!player.getAbilities().instabuild)
 				{
-					String value = CataclysmTweaksConfig.leviathanGrowItem.get();
-					if(event.getItemStack().getItem() == ForgeRegistries.ITEMS.getValue(new ResourceLocation(value.split(":")[0], value.split(":")[1])))
-					{
-						if(!event.getEntity().getAbilities().instabuild)
-						{
-							event.getItemStack().shrink(1);
-						}
-						The_Leviathan_Entity leviathan = new The_Leviathan_Entity(ModEntities.THE_LEVIATHAN.get(), event.getLevel());
-						leviathan.setPos(baby.position());
-						((ITamableLeviathan)leviathan).tame((Player) baby.getOwner());
-						((ITamableLeviathan)leviathan).setCommand(baby.getCommand());
-						((ITamableLeviathan)leviathan).setOrderedToSit(baby.isSitting());
-						leviathan.goalSelector.addGoal(2, new LeviathanFollowOwnerGoal(leviathan, 1.3D, 4.0F, 2.0F, true));
-						//leviathan.targetSelector.addGoal(1, new LeviathanOwnerHurtByTargetGoal(leviathan));
-						//leviathan.targetSelector.addGoal(2, new LeviathanOwnerHurtTargetGoal(leviathan));
-						event.getLevel().addFreshEntity(leviathan);
-						baby.discard();
-					}
+					stack.shrink(1);
+				}
+				The_Leviathan_Entity leviathan = new The_Leviathan_Entity(ModEntities.THE_LEVIATHAN.get(), level);
+				TameUtil.setupTame((ITamable) leviathan, baby);
+				leviathan.setPos(baby.position());
+				leviathan.goalSelector.addGoal(2, new CataclysmFollowOwnerGoal((ITamable) leviathan, 1.3D, 4.0F, 2.0F, true));
+				leviathan.targetSelector.addGoal(1, new CataclysmOwnerHurtByTargetGoal((ITamable) leviathan));
+				leviathan.targetSelector.addGoal(2, new CataclysmOwnerHurtTargetGoal((ITamable) leviathan));
+				level.addFreshEntity(leviathan);
+				baby.discard();
+			}
+		}
+		
+		if(CataclysmTweaksConfig.canModernRemnantGrow.get() && target instanceof Modern_Remnant_Entity remnant)
+		{
+			Item growItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(CataclysmTweaksConfig.remnantGrowItem.get()));
+			if(remnant.isTame() && remnant.isOwnedBy(player) && stack.getItem() == growItem && !(growItem instanceof BrushItem))
+			{
+				if(!player.getAbilities().instabuild)
+				{
+					stack.shrink(1);
+				}
+				Ancient_Remnant_Entity ancient = new Ancient_Remnant_Entity(ModEntities.ANCIENT_REMNANT.get(), level);
+				TameUtil.setupTame((ITamable) ancient, remnant);
+				ancient.setPos(remnant.position());
+				ancient.goalSelector.addGoal(2, new CataclysmFollowOwnerGoal((ITamable) ancient, 1.3D, 4.0F, 2.0F, true));
+				ancient.targetSelector.addGoal(1, new CataclysmOwnerHurtByTargetGoal((ITamable) ancient));
+				ancient.targetSelector.addGoal(2, new CataclysmOwnerHurtTargetGoal((ITamable) ancient));
+				level.addFreshEntity(ancient);
+				remnant.discard();
+			}
+		}
+		
+		if(target instanceof ITamable tame)
+		{
+			if(tame.getOwner() == player)
+			{
+				if(!player.isShiftKeyDown())
+				{
+					player.startRiding((Entity) tame);
+				}
+				else
+				{
+					int command = tame.getCommand() + 1;
+					tame.setCommand(command >= 3 ? 0 : command);
+	                player.displayClientMessage(Component.translatable("entity.cataclysm.all.command_" + tame.getCommand(), ((Entity) tame).getName()), true);
 				}
 			}
 		}
 	}
 	
 	@SubscribeEvent
-	public static void leviathanDrop(LivingDropsEvent event)
+	public static void onDrop(LivingDropsEvent event)
 	{
 		if(event.getEntity() instanceof The_Leviathan_Entity)
 		{
 			The_Leviathan_Entity leviathan = (The_Leviathan_Entity) event.getEntity();
-			if(((ITamableLeviathan) leviathan).isTame())
+			if(((ITamable) leviathan).isTame())
 			{
 				for(ItemEntity entity : event.getDrops())
 				{
@@ -103,12 +122,12 @@ public class EventHandlerForge
 	}
 	
 	@SubscribeEvent
-	public static void leviathanExplosion(ExplosionEvent.Detonate event)
+	public static void onDetonate(ExplosionEvent.Detonate event)
 	{
 		if(event.getExplosion().getSourceMob() instanceof The_Leviathan_Entity)
 		{
 			The_Leviathan_Entity leviathan = (The_Leviathan_Entity) event.getExplosion().getSourceMob();
-			if(((ITamableLeviathan) leviathan).isTame())
+			if(((ITamable) leviathan).isTame())
 			{
 				List<Entity> list = event.getAffectedEntities();
 				for(Iterator<Entity> itr = list.iterator(); itr.hasNext();)
@@ -117,7 +136,7 @@ public class EventHandlerForge
 					if(entity instanceof LivingEntity)
 					{
 						LivingEntity player = (LivingEntity) entity;
-						if(player == ((ITamableLeviathan)leviathan).getOwner())
+						if(player == ((ITamable)leviathan).getOwner())
 						{
 							itr.remove();
 						}
