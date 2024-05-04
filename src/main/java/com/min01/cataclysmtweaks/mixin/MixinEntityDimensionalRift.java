@@ -2,7 +2,7 @@ package com.min01.cataclysmtweaks.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 
-import com.github.L_Ender.cataclysm.entity.BossMonsters.The_Leviathan.Dimensional_Rift_Entity;
+import com.github.L_Ender.cataclysm.entity.AnimationMonster.BossMonsters.The_Leviathan.Dimensional_Rift_Entity;
 import com.min01.cataclysmtweaks.misc.ITamable;
 import com.min01.cataclysmtweaks.util.TameUtil;
 

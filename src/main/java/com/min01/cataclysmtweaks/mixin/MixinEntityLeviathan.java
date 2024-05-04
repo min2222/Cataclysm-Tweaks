@@ -3,8 +3,6 @@ package com.min01.cataclysmtweaks.mixin;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -13,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.github.L_Ender.cataclysm.entity.BossMonsters.The_Leviathan.The_Leviathan_Entity;
+import com.github.L_Ender.cataclysm.entity.AnimationMonster.BossMonsters.The_Leviathan.The_Leviathan_Entity;
 import com.github.L_Ender.cataclysm.entity.etc.CMBossInfoServer;
 import com.min01.cataclysmtweaks.goal.CataclysmFollowOwnerGoal;
 import com.min01.cataclysmtweaks.goal.CataclysmOwnerHurtByTargetGoal;
@@ -156,26 +154,6 @@ public abstract class MixinEntityLeviathan extends Mob implements ITamable
 	private void canPlayMusic(CallbackInfoReturnable<Boolean> ci)
 	{
 		ci.setReturnValue(!this.isTame());
-	}
-	
-	@Inject(at = @At("HEAD"), method = "HoldAttack", cancellable = true, remap = false)
-	private void HoldAttack(CallbackInfo ci) 
-	{
-		LivingEntity lifted = this.getHeldEntity();
-		if (lifted != null) 
-		{
-			if(lifted == this.getOwner())
-			{
-				ci.cancel();
-			}
-		} 
-	}
-	
-	@Nullable
-	@Shadow
-	public LivingEntity getHeldEntity()
-	{
-		throw new IllegalStateException();
 	}
 
 	@Override
