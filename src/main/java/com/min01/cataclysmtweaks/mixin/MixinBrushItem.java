@@ -13,6 +13,7 @@ import com.github.L_Ender.cataclysm.init.ModEntities;
 import com.min01.archaeology.init.ArchaeologySounds;
 import com.min01.archaeology.item.BrushItem;
 import com.min01.cataclysmtweaks.config.CataclysmTweaksConfig;
+import com.min01.cataclysmtweaks.goal.CataclysmFollowOwnerGoal;
 import com.min01.cataclysmtweaks.goal.CataclysmOwnerHurtByTargetGoal;
 import com.min01.cataclysmtweaks.goal.CataclysmOwnerHurtTargetGoal;
 import com.min01.cataclysmtweaks.misc.ITamable;
@@ -69,12 +70,12 @@ public class MixinBrushItem
 				        			net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, p_273316_, p_273619_.getUsedItemHand());
 				        		});
 				        	}
-				            if (i >= 60) 
+				            if (i >= 150) 
 				            {
 								Ancient_Remnant_Entity ancient = new Ancient_Remnant_Entity(ModEntities.ANCIENT_REMNANT.get(), p_273467_);
 								TameUtil.setupTame((ITamable) ancient, remnant);
 								ancient.setPos(remnant.position());
-								//ancient.goalSelector.addGoal(2, new LeviathanFollowOwnerGoal(leviathan, 1.3D, 4.0F, 2.0F, true));
+								ancient.goalSelector.addGoal(2, new CataclysmFollowOwnerGoal((ITamable) ancient, 1.3D, 4.0F, 2.0F, true));
 								ancient.targetSelector.addGoal(1, new CataclysmOwnerHurtByTargetGoal((ITamable) ancient));
 								ancient.targetSelector.addGoal(2, new CataclysmOwnerHurtTargetGoal((ITamable) ancient));
 								p_273467_.addFreshEntity(ancient);

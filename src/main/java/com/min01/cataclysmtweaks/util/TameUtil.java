@@ -12,7 +12,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.scores.Team;
 
 public class TameUtil 
 {
@@ -84,19 +83,6 @@ public class TameUtil
 	    		tame.setTame(false);
 	    	}
 	    }
-	}
-	
-	public static Team getTeam(ITamable tame, Team original)
-	{
-		if(tame.isTame())
-		{
-			LivingEntity livingentity = tame.getOwner();
-			if (livingentity != null)
-			{
-				return livingentity.getTeam();
-			}
-		}
-		return original;
 	}
 	
 	public static boolean canAttack(ITamable tame, LivingEntity living, boolean original)

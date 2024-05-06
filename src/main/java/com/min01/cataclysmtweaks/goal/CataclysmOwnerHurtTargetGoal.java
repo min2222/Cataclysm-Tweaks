@@ -6,6 +6,7 @@ import com.min01.cataclysmtweaks.misc.ITamable;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -35,10 +36,16 @@ public class CataclysmOwnerHurtTargetGoal extends TargetGoal
 			} 
 			else 
 			{
-				this.ownerLastHurt = livingentity.getLastHurtMob();
-				int i = livingentity.getLastHurtMobTimestamp();
-				return i != this.timestamp && this.canAttack(this.ownerLastHurt, TargetingConditions.DEFAULT);
-	         }
+				LivingEntity lastHurt = livingentity.getLastHurtMob();
+				boolean flag = lastHurt instanceof TamableAnimal animal ? !animal.isOwnedBy(this.tameAnimal.getOwner()) : true;
+				if(flag)
+				{
+					this.ownerLastHurt = livingentity.getLastHurtMob();
+					int i = livingentity.getLastHurtMobTimestamp();
+					return i != this.timestamp && this.canAttack(this.ownerLastHurt, TargetingConditions.DEFAULT);
+				}
+				return false;
+			}
 		}
 		else
 		{

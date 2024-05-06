@@ -45,7 +45,7 @@ public class CataclysmTweaksConfig
     	CataclysmTweaksConfig.leviathanTameItem = builder.comment("item used for tame baby leviathan").define("leviathanTameItem", "minecraft:tropical_fish");
     	
     	CataclysmTweaksConfig.canModernRemnantGrow = builder.comment("setting this to true will allows modern remnant to grow into an ancient remnant").define("canModernRemnantGrow", true);
-    	CataclysmTweaksConfig.remnantGrowItem = builder.comment("item used for grow modern remnant to ancient remnant").define("remnantGrowItem", "minecraft:sand");
+    	CataclysmTweaksConfig.remnantGrowItem = builder.comment("item used for grow modern remnant to ancient remnant").define("remnantGrowItem", "minecraft:brush");
     	CataclysmTweaksConfig.remnantTameItem = builder.comment("item used for tame modern remnant").define("remnantTameItem", "minecraft:sniffer_egg");
 
     	CataclysmTweaksConfig.abyssalEggHatchTime = builder.comment("second until baby leviathan hatch").define("abyssalEggHatchTime", 12000);

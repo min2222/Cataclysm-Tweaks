@@ -162,7 +162,7 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.19.2-43.2.0'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    implementation fg.deobf("curse.maven:lendercataclysm-551586:5314844")
+    implementation fg.deobf("curse.maven:lendercataclysm-551586:5316908")
     implementation fg.deobf("curse.maven:lionfish-api-1001614:5314835")
     implementation fg.deobf("curse.maven:curios-309927:5302436")
     implementation fg.deobf("curse.maven:archaeology-api-950822:5141973")

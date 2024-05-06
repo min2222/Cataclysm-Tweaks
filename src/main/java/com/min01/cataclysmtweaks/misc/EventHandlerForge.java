@@ -7,6 +7,7 @@ import com.github.L_Ender.cataclysm.entity.AnimationMonster.BossMonsters.Ancient
 import com.github.L_Ender.cataclysm.entity.AnimationMonster.BossMonsters.The_Leviathan.The_Leviathan_Entity;
 import com.github.L_Ender.cataclysm.entity.Pet.Modern_Remnant_Entity;
 import com.github.L_Ender.cataclysm.entity.Pet.The_Baby_Leviathan_Entity;
+import com.github.L_Ender.cataclysm.init.ModBlocks;
 import com.github.L_Ender.cataclysm.init.ModEntities;
 import com.github.L_Ender.cataclysm.init.ModItems;
 import com.min01.archaeology.item.BrushItem;
@@ -27,6 +28,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -37,6 +39,31 @@ import net.minecraftforge.registries.ForgeRegistries;
 @Mod.EventBusSubscriber(modid = CataclysmTweaks.MODID, bus = Bus.FORGE)
 public class EventHandlerForge 
 {	
+	@SubscribeEvent
+	public static void onLivingTick(LivingTickEvent event)
+	{
+		Entity entity = event.getEntity();
+		if(entity instanceof The_Leviathan_Entity leviathan)
+		{
+			if(((ITamable) leviathan).isTame())
+			{
+				leviathan.goalSelector.addGoal(2, new CataclysmFollowOwnerGoal((ITamable) leviathan, 1.3D, 4.0F, 2.0F, true));
+				leviathan.targetSelector.addGoal(1, new CataclysmOwnerHurtByTargetGoal((ITamable) leviathan));
+				leviathan.targetSelector.addGoal(2, new CataclysmOwnerHurtTargetGoal((ITamable) leviathan));
+			}
+		}
+		
+		if(entity instanceof Ancient_Remnant_Entity ancient)
+		{
+			if(((ITamable) ancient).isTame())
+			{
+				ancient.goalSelector.addGoal(2, new CataclysmFollowOwnerGoal((ITamable) ancient, 1.3D, 4.0F, 2.0F, true));
+				ancient.targetSelector.addGoal(1, new CataclysmOwnerHurtByTargetGoal((ITamable) ancient));
+				ancient.targetSelector.addGoal(2, new CataclysmOwnerHurtTargetGoal((ITamable) ancient));
+			}
+		}
+	}
+	
 	@SubscribeEvent
 	public static void onEntityInteract(PlayerInteractEvent.EntityInteract event)
 	{
@@ -112,7 +139,7 @@ public class EventHandlerForge
 			{
 				for(ItemEntity entity : event.getDrops())
 				{
-					if(entity.getItem().getItem() == ModItems.TIDAL_CLAWS.get())
+					if(entity.getItem().getItem() != ModBlocks.ABYSSAL_EGG.get().asItem())
 					{
 						entity.discard();
 					}

@@ -31,7 +31,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.scores.Team;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 @Mixin(Ancient_Remnant_Entity.class)
@@ -137,12 +136,6 @@ public abstract class MixinEntityAncientRemnant extends  Mob implements ITamable
 		float f1 = -Mth.sin((xRot + yPos) * ((float)Math.PI / 180F));
 		float f2 = Mth.cos(yRot * ((float)Math.PI / 180F)) * Mth.cos(xRot * ((float)Math.PI / 180F));
 		return new Vec3(f, f1, f2).scale(distance);
-	}
-	
-	@Override
-	public Team getTeam()
-	{
-		return TameUtil.getTeam(this, super.getTeam());
 	}
 	
 	@Override
