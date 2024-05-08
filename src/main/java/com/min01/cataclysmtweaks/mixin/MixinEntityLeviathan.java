@@ -29,6 +29,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 @Mixin(The_Leviathan_Entity.class)
@@ -74,6 +75,16 @@ public abstract class MixinEntityLeviathan extends Mob implements ITamable
 	private void readAdditionalSaveData(CompoundTag compound, CallbackInfo ci)
 	{
 		TameUtil.readData(compound, this);
+	}
+	
+	@Override
+	public boolean canBeRiddenUnderFluidType(FluidType type, Entity rider)
+	{
+		if(this.isTame() && this.getOwner() == rider)
+		{
+			return true;
+		}
+		return super.canBeRiddenUnderFluidType(type, rider);
 	}
 	
 	@Inject(at = @At("HEAD"), method = "travel", cancellable = true)
