@@ -96,7 +96,7 @@ public abstract class MixinEntityAncientRemnant extends  Mob implements ITamable
 				boolean jumping = ObfuscationReflectionHelper.getPrivateValue(LivingEntity.class, this.getOwner(), "f_20899_");
 				if(jumping)
 				{
-					if(this.isOnGround() || this.isInWater())
+					if(this.onGround() || this.isInWater())
 					{
 						this.jumpFromGround();
 					}
@@ -124,10 +124,10 @@ public abstract class MixinEntityAncientRemnant extends  Mob implements ITamable
 	}
 	
 	@Override
-	public void positionRider(Entity p_20312_) 
+	protected void positionRider(Entity p_19957_, MoveFunction p_19958_) 
 	{
 		Vec3 lookPos = this.getLookPos(0, this.getYRot(), 0, 3);
-		p_20312_.setPos(this.position().add(lookPos.x, lookPos.y + this.getPassengersRidingOffset(), lookPos.z));
+		p_19957_.setPos(this.position().add(lookPos.x, lookPos.y + this.getPassengersRidingOffset(), lookPos.z));
 	}
 	
 	private Vec3 getLookPos(float xRot, float yRot, float yPos, double distance)
@@ -216,7 +216,7 @@ public abstract class MixinEntityAncientRemnant extends  Mob implements ITamable
 		try 
 		{
 			UUID uuid = this.getOwnerUUID();
-			return uuid == null ? null : this.level.getPlayerByUUID(uuid);
+			return uuid == null ? null : this.level().getPlayerByUUID(uuid);
 		} 
 		catch (IllegalArgumentException illegalargumentexception)
 		{

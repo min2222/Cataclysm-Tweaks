@@ -10,7 +10,6 @@ import com.github.L_Ender.cataclysm.entity.Pet.The_Baby_Leviathan_Entity;
 import com.github.L_Ender.cataclysm.init.ModBlocks;
 import com.github.L_Ender.cataclysm.init.ModEntities;
 import com.github.L_Ender.cataclysm.init.ModItems;
-import com.min01.archaeology.item.BrushItem;
 import com.min01.cataclysmtweaks.CataclysmTweaks;
 import com.min01.cataclysmtweaks.config.CataclysmTweaksConfig;
 import com.min01.cataclysmtweaks.goal.CataclysmFollowOwnerGoal;
@@ -24,6 +23,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BrushItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -166,9 +166,9 @@ public class EventHandlerForge
 	@SubscribeEvent
 	public static void onDetonate(ExplosionEvent.Detonate event)
 	{
-		if(event.getExplosion().getSourceMob() instanceof The_Leviathan_Entity)
+		if(event.getExplosion().getIndirectSourceEntity() instanceof The_Leviathan_Entity)
 		{
-			The_Leviathan_Entity leviathan = (The_Leviathan_Entity) event.getExplosion().getSourceMob();
+			The_Leviathan_Entity leviathan = (The_Leviathan_Entity) event.getExplosion().getIndirectSourceEntity();
 			if(((ITamable) leviathan).isTame())
 			{
 				List<Entity> list = event.getAffectedEntities();

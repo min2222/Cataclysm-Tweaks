@@ -10,8 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.github.L_Ender.cataclysm.entity.AnimationMonster.BossMonsters.Ancient_Remnant_Entity;
 import com.github.L_Ender.cataclysm.entity.Pet.Modern_Remnant_Entity;
 import com.github.L_Ender.cataclysm.init.ModEntities;
-import com.min01.archaeology.init.ArchaeologySounds;
-import com.min01.archaeology.item.BrushItem;
 import com.min01.cataclysmtweaks.config.CataclysmTweaksConfig;
 import com.min01.cataclysmtweaks.goal.CataclysmFollowOwnerGoal;
 import com.min01.cataclysmtweaks.goal.CataclysmOwnerHurtByTargetGoal;
@@ -22,12 +20,14 @@ import com.min01.cataclysmtweaks.util.TameUtil;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BrushItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -61,7 +61,7 @@ public class MixinBrushItem
 							HumanoidArm humanoidarm = p_273619_.getUsedItemHand() == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
 							this.spawnDustParticles(p_273467_, remnant, humanoidarm);
 				        	remnant.gameEvent(GameEvent.EAT);
-							p_273467_.playSound(player, remnant.blockPosition(), ArchaeologySounds.BRUSH_GENERIC.get(), SoundSource.BLOCKS, 1, 1);
+							p_273467_.playSound(player, remnant.blockPosition(), SoundEvents.BRUSH_GENERIC, SoundSource.BLOCKS, 1, 1);
 				        	if(!player.getAbilities().instabuild)
 				        	{
 				        		p_273316_.hurtAndBreak(1, player, (p_219739_) -> 
@@ -70,7 +70,7 @@ public class MixinBrushItem
 				        			net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, p_273316_, p_273619_.getUsedItemHand());
 				        		});
 				        	}
-				            if (i >= 150) 
+				        	if (i >= 150)
 				            {
 								Ancient_Remnant_Entity ancient = new Ancient_Remnant_Entity(ModEntities.ANCIENT_REMNANT.get(), p_273467_);
 								TameUtil.setupTame((ITamable) ancient, remnant);

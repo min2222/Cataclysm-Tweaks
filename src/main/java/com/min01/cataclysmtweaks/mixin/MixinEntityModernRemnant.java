@@ -22,4 +22,50 @@ public class MixinEntityModernRemnant
 		Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(CataclysmTweaksConfig.remnantTameItem.get()));
 		return Ingredient.of(item);
 	}
+	
+	//FIXME not working
+	/*@Inject(at = @At("HEAD"), method = "mobInteract", cancellable = true)
+	private void mobInteract(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir)
+	{
+        if(CataclysmTweaksConfig.canModernRemnantGrow.get()) 
+        {
+			if(Modern_Remnant_Entity.class.cast(this).isTame() && Modern_Remnant_Entity.class.cast(this).isOwnedBy(player))
+			{
+		        ItemStack itemstack = player.getItemInHand(hand);
+		        Item item = itemstack.getItem();
+				Item growItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(CataclysmTweaksConfig.remnantGrowItem.get()));
+				if(item == Items.BRUSH && growItem instanceof BrushItem)
+				{
+		        	player.startUsingItem(hand);
+		        	cir.setReturnValue(InteractionResult.PASS);
+				}
+			}
+        }
+	}
+	
+	@Redirect(at = @At(value = "INVOKE", target = "Lcom/github/L_Ender/cataclysm/entity/Pet/Modern_Remnant_Entity;setCommand(I)V"), method = "mobInteract", remap = false)
+	private void setCommand(Modern_Remnant_Entity instance, int command)
+	{
+        ItemStack itemstack = instance.getOwner().getItemInHand(instance.getOwner().getUsedItemHand());
+        Item item = itemstack.getItem();
+		Item growItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(CataclysmTweaksConfig.remnantGrowItem.get()));
+        boolean flag = CataclysmTweaksConfig.canModernRemnantGrow.get() ? item != Items.BRUSH && !(growItem instanceof BrushItem) : true;
+        if(flag)
+        {
+			instance.setCommand(command);
+        }
+	}
+
+	@Redirect(at = @At(value = "INVOKE", target = "Lcom/github/L_Ender/cataclysm/entity/Pet/Modern_Remnant_Entity;setOrderedToSit(Z)V"), method = "mobInteract", remap = false)
+	private void setOrderedToSit(Modern_Remnant_Entity instance, boolean sit)
+	{
+        ItemStack itemstack = instance.getOwner().getItemInHand(instance.getOwner().getUsedItemHand());
+        Item item = itemstack.getItem();
+		Item growItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(CataclysmTweaksConfig.remnantGrowItem.get()));
+        boolean flag = CataclysmTweaksConfig.canModernRemnantGrow.get() ? item != Items.BRUSH && !(growItem instanceof BrushItem) : true;
+        if(flag)
+        {
+			instance.setOrderedToSit(sit);
+        }
+	}*/
 }

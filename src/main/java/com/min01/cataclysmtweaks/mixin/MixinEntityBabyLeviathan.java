@@ -1,5 +1,6 @@
 package com.min01.cataclysmtweaks.mixin;
 
+import net.minecraft.world.level.ItemLike;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -10,7 +11,6 @@ import com.min01.cataclysmtweaks.config.CataclysmTweaksConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.registries.ForgeRegistries;
 
 @Mixin(The_Baby_Leviathan_Entity.class)

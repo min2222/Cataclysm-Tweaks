@@ -40,7 +40,7 @@ public class CataclysmFollowOwnerGoal extends Goal
 	public CataclysmFollowOwnerGoal(ITamable tame, double speed, float minDist, float maxDist, boolean leaves) 
 	{
 		this.tameable = tame;
-		this.world = ((Entity) tame).level;
+		this.world = ((Entity) tame).level();
 		this.followSpeed = speed;
 		this.minDist = minDist;
 		this.maxDist = maxDist;
